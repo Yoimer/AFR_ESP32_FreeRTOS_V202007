@@ -130,6 +130,33 @@ static const char * _pStateStr[ eOTA_AgentState_All ] =
     "Stopped"
 };
 
+/*
+ * Publish a message to the specified client/topic at the given QOS.
+ */
+static IotMqttError_t prvPublishMessage( const IotMqttConnection_t xMqttConnection,
+                                         const char * const pacTopic,
+                                         uint16_t usTopicLen,
+                                         const char * pcMsg,
+                                         uint32_t ulMsgSize,
+                                         IotMqttQos_t eQOS )
+{
+    IotMqttError_t eResult;
+    IotMqttPublishInfo_t xPublishParams;
+
+    xPublishParams.pTopicName = pacTopic;
+    xPublishParams.topicNameLength = usTopicLen;
+    xPublishParams.qos = eQOS;
+    xPublishParams.pPayload = pcMsg;
+    xPublishParams.payloadLength = ulMsgSize;
+    xPublishParams.retryLimit = 3;
+    xPublishParams.retryMs = 1000;
+    xPublishParams.retain = false;
+
+    eResult = IotMqtt_TimedPublish( xMqttConnection, &xPublishParams, 0, 2000 );
+
+    return eResult;
+}
+
 /**
  * @brief Initialize the libraries required for OTA demo.
  *
@@ -397,6 +424,11 @@ void vRunOTAUpdateDemo( bool awsIotMqttMode,
     OTA_State_t eState;
     static OTA_ConnectionContext_t xOTAConnectionCtx;
 
+   /* Topics used as both topic filters and topic names in this demo. */
+    const char * pTopics = "202007/topic1";
+
+    const char * pcMsg = "Hello OTA + MQTT";
+
     IotLogInfo( "OTA demo version %u.%u.%u\r\n",
                 xAppFirmwareVersion.u.x.ucMajor,
                 xAppFirmwareVersion.u.x.ucMinor,
@@ -439,6 +471,9 @@ void vRunOTAUpdateDemo( bool awsIotMqttMode,
 
             while( ( ( eState = OTA_GetAgentState() ) != eOTA_AgentState_Stopped ) && _networkConnected )
             {
+                /* Publish message every second to example topic otamqttdemo/topic1 you can read from the queue here and publish the message.*/
+                prvPublishMessage( _mqttConnection, pTopics ,strlen(pTopics), pcMsg, strlen(pcMsg), IOT_MQTT_QOS_1 );
+
                 /* Wait forever for OTA traffic but allow other tasks to run and output statistics only once per second. */
                 IotClock_SleepMs( OTA_DEMO_TASK_DELAY_SECONDS * 1000 );
 
