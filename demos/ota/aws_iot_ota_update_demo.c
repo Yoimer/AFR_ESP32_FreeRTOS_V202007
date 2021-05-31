@@ -61,6 +61,9 @@
 #include "aws_demo_config.h"
 #include "aws_application_version.h"
 
+#include "sensors.h"
+char sensorsPayload[100];
+
 /**
  * @brief Timeout for MQTT connection, if the MQTT connection is not established within
  * this time, the connect function returns #IOT_MQTT_TIMEOUT

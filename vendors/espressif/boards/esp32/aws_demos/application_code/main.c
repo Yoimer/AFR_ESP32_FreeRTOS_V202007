@@ -135,6 +135,7 @@ int app_main( void )
         #endif /* if BLE_ENABLED */
         /* Run all demos. */
         DEMO_RUNNER_RunDemos();
+        xTaskCreate(sensors_task, "sensors_task", configMINIMAL_STACK_SIZE * 15, NULL, 5, NULL);
     }
 
     /* Start the scheduler.  Initialization that requires the OS to be running,
