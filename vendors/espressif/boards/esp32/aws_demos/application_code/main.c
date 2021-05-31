@@ -73,6 +73,8 @@
     #include "iot_ble_numericComparison.h"
 #endif
 
+#include "sensors.h"
+
 /* Logging Task Defines. */
 #define mainLOGGING_MESSAGE_QUEUE_LENGTH    ( 32 )
 #define mainLOGGING_TASK_STACK_SIZE         ( configMINIMAL_STACK_SIZE * 4 )
