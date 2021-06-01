@@ -12,6 +12,15 @@
 #include "minmea.h"
 #include "sensors.h"
 
+#include "nmea.h"
+#include "gpgll.h"
+#include "gpgga.h"
+#include "gprmc.h"
+#include "gpgsa.h"
+#include "gpvtg.h"
+#include "gptxt.h"
+#include "gpgsv.h"
+
 char version[VERSION_STRING_LENGTH];
 char string_latitude[LATITUDE_STRING_LENGTH];
 char string_longitude[LONGITUDE_STRING_LENGTH];
