@@ -59,14 +59,12 @@ static void read_and_parse_nmea()
     size_t total_bytes = 0;
     while (1) {
         // Read data from the UART
-        int read_bytes = uart_read_bytes(UART_NUM,
-                (uint8_t*) buffer + total_bytes,
-                UART_RX_BUF_SIZE - total_bytes, 100 / portTICK_RATE_MS);
+        int read_bytes = uart_read_bytes(UART_NUM, (uint8_t*) buffer + total_bytes, UART_RX_BUF_SIZE - total_bytes, 100 / portTICK_RATE_MS);
 
         printf("read_bytes: %d\n", read_bytes);
 
         if (read_bytes <= 0) {
-            continue;
+            break;
         }
 
         nmea_s *data;
@@ -76,13 +74,13 @@ static void read_and_parse_nmea()
         char* start = memchr(buffer, '$', total_bytes);
         if (start == NULL) {
             total_bytes = 0;
-            continue;
+            break;
         }
 
         /* find end of line */
         char* end = memchr(start, '\r', total_bytes - (start - buffer));
         if (NULL == end || '\n' != *(++end)) {
-            continue;
+            break;
         }
         end[-1] = NMEA_END_CHAR_1;
         end[0] = NMEA_END_CHAR_2;
@@ -197,13 +195,13 @@ static void read_and_parse_nmea()
         /* buffer empty? */
         if (end == buffer + total_bytes) {
             total_bytes = 0;
-            continue;
+            break;
         }
 
         /* copy rest of buffer to beginning */
         if (buffer != memmove(buffer, end, total_bytes - (end - buffer))) {
             total_bytes = 0;
-            continue;
+            break;
         }
 
         total_bytes -= end - buffer;
@@ -221,10 +219,6 @@ void sensors_task(void *pvParameters)
     {
 
         read_and_parse_nmea();
-        sprintf(string_latitude, "%.6f", latitude);
-        sprintf(string_longitude, "%.6f", longitude);
-        sprintf(sensorsPayload, "{\"lat\":\"%s\",\"lot\":\"%s\"}", string_latitude, string_longitude);
-
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
