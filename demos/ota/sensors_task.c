@@ -130,12 +130,23 @@ static void read_and_parse_nmea()
 
                 printf("Latitude:\n");
                 printf("  Degrees: %d\n", pos->latitude.degrees);
+                degrees = pos->latitude.degrees;
                 printf("  Minutes: %f\n", pos->latitude.minutes / 60.0);
+                minutes = (pos->latitude.minutes / 60.0);
                 printf("  Cardinal: %c\n", (char) pos->latitude.cardinal);
-
 
                 char latitude_cardinal = pos->latitude.cardinal;
                 printf("latitude_cardinal--: %c\n", latitude_cardinal);
+
+                if ((latitude_cardinal == 'W') || (latitude_cardinal == 'S')) {
+                    latitude = degrees + minutes;
+                    latitude = - latitude;
+                    printf("latitude: %f\n", latitude);
+                }
+                else{
+                    latitude = degrees + minutes;
+                    printf("latitude: %f\n", latitude);
+                }
 
                 strftime(fmt_buf, sizeof(fmt_buf), "%H:%M:%S", &pos->time);
                 printf("Time: %s\n", fmt_buf);
@@ -169,11 +180,23 @@ static void read_and_parse_nmea()
 
                 printf("Latitude:\n");
                 printf("  Degrees: %d\n", pos->latitude.degrees);
+                degrees = pos->latitude.degrees;
                 printf("  Minutes: %f\n", pos->latitude.minutes / 60.0);
+                minutes = (pos->latitude.minutes / 60.0);
                 printf("  Cardinal: %c\n", (char) pos->latitude.cardinal);
 
                 char latitude_cardinal = pos->latitude.cardinal;
                 printf("latitude_cardinal--: %c\n", latitude_cardinal);
+
+                if ((latitude_cardinal == 'W') || (latitude_cardinal == 'S')) {
+                    latitude = degrees + minutes;
+                    latitude = - latitude;
+                    printf("latitude: %f\n", latitude);
+                }
+                else{
+                    latitude = degrees + minutes;
+                    printf("latitude: %f\n", latitude);
+                }
 
                 strftime(fmt_buf, sizeof(fmt_buf), "%d %b %T %Y", &pos->date_time);
                 printf("Date & Time: %s\n", fmt_buf);
