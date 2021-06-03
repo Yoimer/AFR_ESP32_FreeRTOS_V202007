@@ -30,7 +30,7 @@ extern char sensorsPayload[PAYLOAD_STRING_LENGTH];
 #define UART_RX_PIN             33
 #define UART_RX_BUF_SIZE        (1024)
 
-static char tag[] = "gps";
+//static char tag[] = "gps";
 float latitude = -200.00;
 float longitude = -200.00;
 
@@ -62,7 +62,7 @@ static void read_and_parse_nmea()
         int read_bytes = uart_read_bytes(UART_NUM, (uint8_t*) buffer + total_bytes, UART_RX_BUF_SIZE - total_bytes, 100 / portTICK_RATE_MS);
 
         printf("read_bytes: %d\n", read_bytes);
-        printf("buffer: %s\n", buffer);
+        //printf("buffer: %s\n", buffer);
 
         if (read_bytes <= 0) {
             break;
@@ -109,12 +109,34 @@ static void read_and_parse_nmea()
                 nmea_gpgll_s *pos = (nmea_gpgll_s *) data;
                 printf("Longitude:\n");
                 printf("  Degrees: %d\n", pos->longitude.degrees);
-                printf("  Minutes: %f\n", pos->longitude.minutes);
+                int degrees = pos->longitude.degrees;
+                printf("  Minutes: %f\n", pos->longitude.minutes / 60.0);
+                float minutes = (pos->longitude.minutes / 60.0);
                 printf("  Cardinal: %c\n", (char) pos->longitude.cardinal);
+
+                char longitude_cardinal = pos->longitude.cardinal;
+                printf("longitude_cardinal--: %c\n", longitude_cardinal);
+
+                if ((longitude_cardinal == 'W') || (longitude_cardinal == 'S')) {
+                    longitude = degrees + minutes;
+                    longitude = - longitude;
+                    printf("longitude: %f\n", longitude);
+                }
+                else{
+                    longitude = degrees + minutes;
+                    printf("longitude: %f\n", longitude);
+                }
+
+
                 printf("Latitude:\n");
                 printf("  Degrees: %d\n", pos->latitude.degrees);
-                printf("  Minutes: %f\n", pos->latitude.minutes);
+                printf("  Minutes: %f\n", pos->latitude.minutes / 60.0);
                 printf("  Cardinal: %c\n", (char) pos->latitude.cardinal);
+
+
+                char latitude_cardinal = pos->latitude.cardinal;
+                printf("latitude_cardinal--: %c\n", latitude_cardinal);
+
                 strftime(fmt_buf, sizeof(fmt_buf), "%H:%M:%S", &pos->time);
                 printf("Time: %s\n", fmt_buf);
             }
@@ -124,12 +146,35 @@ static void read_and_parse_nmea()
                 nmea_gprmc_s *pos = (nmea_gprmc_s *) data;
                 printf("Longitude:\n");
                 printf("  Degrees: %d\n", pos->longitude.degrees);
-                printf("  Minutes: %f\n", pos->longitude.minutes);
+                printf("  Minutes: %f\n", pos->longitude.minutes / 60.0);
+                int degrees = pos->longitude.degrees;
+                printf("  Minutes: %f\n", pos->longitude.minutes / 60.0);
+                float minutes = (pos->longitude.minutes / 60.0);
                 printf("  Cardinal: %c\n", (char) pos->longitude.cardinal);
+
+
+                char longitude_cardinal = pos->longitude.cardinal;
+                printf("longitude_cardinal--: %c\n", longitude_cardinal);
+
+                if ((longitude_cardinal == 'W') || (longitude_cardinal == 'S')) {
+                    longitude = degrees + minutes;
+                    longitude = - longitude;
+                    printf("longitude: %f\n", longitude);
+                }
+                else{
+                    longitude = degrees + minutes ;
+                    printf("longitude: %f\n", longitude);
+                }
+
+
                 printf("Latitude:\n");
                 printf("  Degrees: %d\n", pos->latitude.degrees);
-                printf("  Minutes: %f\n", pos->latitude.minutes);
+                printf("  Minutes: %f\n", pos->latitude.minutes / 60.0);
                 printf("  Cardinal: %c\n", (char) pos->latitude.cardinal);
+
+                char latitude_cardinal = pos->latitude.cardinal;
+                printf("latitude_cardinal--: %c\n", latitude_cardinal);
+
                 strftime(fmt_buf, sizeof(fmt_buf), "%d %b %T %Y", &pos->date_time);
                 printf("Date & Time: %s\n", fmt_buf);
                 printf("Speed, in Knots: %f\n", pos->gndspd_knots);
